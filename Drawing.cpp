@@ -163,19 +163,15 @@ void Drawing::drawObjectRotated3D(const unsigned short* data, int size, long cen
 
 void Drawing::calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height)
 {
-  const unsigned short* d = data;
   unsigned short posX;
   unsigned short posY;
   unsigned short x0 = 4096;
   unsigned short y0 = 4096;
   unsigned short x1 = 0;
   unsigned short y1 = 0;
-  while (size>0) {
-    posX = pgm_read_word(d) & 0x7fff;
-    d++;
-    posY = pgm_read_word(d);
-    d++;
-    size--;
+  for (int i=0; i<(size/2); i+=2){
+    posX = data[i] & 0x7fff;
+    posY = data[i+1];
     if (posX < x0) x0 = posX;
     if (posY < y0) y0 = posY;
     if (posX > x1) x1 = posX;
