@@ -55,8 +55,10 @@ void drawBoxes()
   laser.setOffset(2048,2048);
   laser.setScale(4);
   
-  for (int i = 0;i<20;i++) {
-    Drawing::drawObject(draw_boxes, sizeof(draw_boxes)/4, -centerX, -centerY);
+  for (int i = 0;i<1;i++) {
+    //Drawing::drawObject(draw_boxes, sizeof(draw_boxes)/4, -centerX, -centerY);
+    Serial.println("----------------");
+    Drawing::drawObjectArray(draw_boxes_array, sizeof(draw_boxes)/2, -centerX, -centerY);
   }
 }
 

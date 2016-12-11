@@ -97,6 +97,7 @@ long Drawing::drawLetter(byte letter, long translateX, long translateY)
 
 void Drawing::drawObject(const unsigned short* data, int size, long translateX, long translateY)
 {
+  //Serial.println("size: "+size);
   const unsigned short* d = data;
   unsigned short posX;
   unsigned short posY;
@@ -107,6 +108,8 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
     d++;
     size--;
 
+      //Serial.println(posX+", "+posY);
+
     if (posX & 0x8000) {
       laser.on();
     } else {
@@ -115,6 +118,39 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
     laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
 
     //Serial.println( String(posX & 0x7fff)+", "+posY);
+  }
+  laser.off();
+}
+
+void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY)
+{
+  //Serial.println("size: "+String(size));
+  //const unsigned short* d = data;
+  unsigned short posX;
+  unsigned short posY;
+  //while (size>0) {
+  for (byte i=0; i<(size); i+=2) {
+      //Serial.println("i="+String(i));
+      
+//    posX = pgm_read_word(d);
+//    d++;
+//    posY = pgm_read_word(d);
+//    d++;
+//    size--;
+
+      posX = data[i];
+      posY = data[i+1];
+
+      //Serial.println(posX+", "+posY);
+
+    if (posX & 0x8000) {
+      laser.on();
+    } else {
+      laser.off();
+    }
+    laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
+
+    //Serial.println( String(posX & 0x7fff) + ", " + String(posY));
   }
   laser.off();
 }
@@ -163,6 +199,7 @@ void Drawing::drawObjectRotated3D(const unsigned short* data, int size, long cen
 
 void Drawing::calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height)
 {
+  //Serial.println("size: "+String(size));
   unsigned short posX;
   unsigned short posY;
   unsigned short x0 = 4096;
