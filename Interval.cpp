@@ -7,7 +7,7 @@ class Interval
       this->interval = interval;
     }
     
-    boolean next(){
+    boolean ready(){
       if ((millis() - this->lastRead) > this->interval) {
         this->lastRead = millis();
         return true;
