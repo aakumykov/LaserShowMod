@@ -124,24 +124,19 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
 
 void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY)
 {
-  //Serial.println("size: "+String(size));
-  //const unsigned short* d = data;
+  Serial.println("Drawing::drawObjectArray()");
+  
   unsigned short posX;
   unsigned short posY;
-  //while (size>0) {
-  for (byte i=0; i<(size); i+=2) {
-      //Serial.println("i="+String(i));
-      
-//    posX = pgm_read_word(d);
-//    d++;
-//    posY = pgm_read_word(d);
-//    d++;
-//    size--;
 
+  for (byte i=0; i<(size); i+=2) {
       posX = data[i];
       posY = data[i+1];
-
-      //Serial.println(posX+", "+posY);
+      
+        Serial.print(posX);
+        Serial.print(", ");
+        Serial.print(posY);
+        Serial.println("");
 
     if (posX & 0x8000) {
       laser.on();
@@ -149,8 +144,8 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       laser.off();
     }
     laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
-
-    //Serial.println( String(posX & 0x7fff) + ", " + String(posY));
+      
+      //Serial.println( String(posX & 0x7fff) + ", " + String(posY));
   }
   laser.off();
 }
@@ -198,6 +193,32 @@ void Drawing::drawObjectRotated3D(const unsigned short* data, int size, long cen
 }
 
 void Drawing::calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height)
+{
+  const unsigned short* d = data;
+  unsigned short posX;
+  unsigned short posY;
+  unsigned short x0 = 4096;
+  unsigned short y0 = 4096;
+  unsigned short x1 = 0;
+  unsigned short y1 = 0;
+  while (size>0) {
+    posX = pgm_read_word(d) & 0x7fff;
+    d++;
+    posY = pgm_read_word(d);
+    d++;
+    size--;
+    if (posX < x0) x0 = posX;
+    if (posY < y0) y0 = posY;
+    if (posX > x1) x1 = posX;
+    if (posY > y1) y1 = posY;
+  }
+  centerX = (x0 + x1) / 2;
+  centerY = (y0 + y1) / 2;
+  width = x1 - x0;
+  height = y1 - y0;
+}
+
+void Drawing::calcObjectBoxArray(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height)
 {
   //Serial.println("size: "+String(size));
   unsigned short posX;

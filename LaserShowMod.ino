@@ -27,42 +27,54 @@ const unsigned short draw_boxes[] PROGMEM = {
 0x80fa,0xfa,
 };
 
-//const unsigned short draw_boxes_array[] = {
-//0x0,0x0,
-//0x8000,0x3e8,
-//0x83e8,0x3e8,
-//0x83e8,0x0,
-//0x8000,0x0,
-//
+const unsigned short draw_boxes_array[] = {
+0x0,0x0,
+0x8000,0x3e8,
+0x83e8,0x3e8,
+0x83e8,0x0,
+0x8000,0x0,
+
 //0xfa,0xfa,
 //0x80fa,0x2ee,
 //0x82ee,0x2ee,
 //0x82ee,0xfa,
 //0x80fa,0xfa,
-//};
+};
+
+void drawBoxesArray()
+{
+  long centerX, centerY, w,h;
+  Drawing::calcObjectBoxArray(draw_boxes_array, sizeof(draw_boxes_array)/4, centerX, centerY, w, h);
+
+  laser.setOffset(2048,2048);
+  laser.setScale(4);
+  
+  for (int i = 0;i<1;i++) {
+    Drawing::drawObjectArray(draw_boxes_array, sizeof(draw_boxes_array)/2, -centerX, -centerY);
+  }
+}
+
+void drawBoxesExternal(unsigned short data, int data_length)
+{
+  long centerX, centerY, w,h;
+  Drawing::calcObjectBoxArray(draw_boxes, sizeof(draw_boxes)/4, centerX, centerY, w, h);
+
+  laser.setOffset(2048,2048);
+  laser.setScale(4);
+  
+  for (int i = 0;i<1;i++) {
+    Drawing::drawObjectArray(draw_boxes, sizeof(draw_boxes)/2, -centerX, -centerY);
+  }
+}
+
 
 void setup()
 {  
   laser.init();
   Serial.begin(9600);
   while(!Serial);
-
-  Serial.println("= LaserShowMod2, setup complete =");
+  Serial.println("= LaserShowMod2 =");
 }
-
-void drawBoxes(unsigned short data, int data_length)
-{
-  long centerX, centerY, w,h;
-  Drawing::calcObjectBox(data, data_length/4, centerX, centerY, w, h);
-
-  laser.setOffset(2048,2048);
-  laser.setScale(4);
-  
-  for (int i = 0;i<1;i++) {
-    Drawing::drawObjectArray(data_length, data_length/2, -centerX, -centerY);
-  }
-}
-
 
 void loop() {
   sListener.wait();
@@ -85,22 +97,22 @@ void loop() {
       int* data = cmdParser.data();
       int count = cmdParser.length();
       
-      Serial.print("command: ");
-      Serial.println(command);
-
-      Serial.print("count: ");
-      Serial.println(count);
-      
-      Serial.println("data: ");
+      Serial.print("command: "); Serial.println(command);
+      Serial.print("count: "); Serial.println(count);
+      Serial.print("data ("); Serial.print(count); Serial.println(")");
       for (int i=0; i<count; i++) { Serial.println(data[i]); }
 
-      unsigned short *data2 = new unsigned short;
-      for (int i=0; i<count; i++) {
-        data2[i] = (unsigned short)data[i];
-      }
+//      unsigned short *data2 = new unsigned short;
+//      for (int i=0; i<count; i++) {
+//        data2[i] = (unsigned short)data[i];
+//      }
+//      drawBoxes(data2, count);
 
-      drawBoxes(data2, count);
+      drawBoxesArray();
+
+      Serial.println("--------------");
     }
   }
 }
+
 

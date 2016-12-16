@@ -39,6 +39,8 @@ public:
 
   //! Returns the center of the object (center of bounding box)
   static void calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height);
+
+  static void calcObjectBoxArray(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height);
 };
 
 #endif
