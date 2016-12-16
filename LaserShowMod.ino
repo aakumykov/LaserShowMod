@@ -71,8 +71,7 @@ void drawBoxesExternal(unsigned short data, int data_length)
 void setup()
 {  
   laser.init();
-  Serial.begin(9600);
-  while(!Serial);
+  Serial.begin(9600); while(!Serial);
   Serial.println("= LaserShowMod2 =");
 }
 
@@ -81,38 +80,56 @@ void loop() {
 
   if (interval.ready()) {
     if (sListener.recieved()){
-      String string_data = sListener.data();
-      int data_length = string_data.length();
-      
-      Serial.print("string_data: ");
-      Serial.print(string_data);
-      Serial.println(" (" + String(data_length) + ")");
+//      Serial.print("data ("); Serial.print(count); Serial.print("): ");
+//      for (int i=0; i<count; i++) { 
+//        Serial.print(data[i]); Serial.print(",");
+//      } Serial.println("");
 
-      char* char_data = new char[data_length+1];
-      string_data.toCharArray(char_data, data_length+1);
-
-      cmdParser.parse(char_data);
-
-      char* command = cmdParser.command();
-      int* data = cmdParser.data();
-      int count = cmdParser.length();
-      
-      Serial.print("command: "); Serial.println(command);
-      Serial.print("count: "); Serial.println(count);
-      Serial.print("data ("); Serial.print(count); Serial.println(")");
-      for (int i=0; i<count; i++) { Serial.println(data[i]); }
-
-//      unsigned short *data2 = new unsigned short;
-//      for (int i=0; i<count; i++) {
-//        data2[i] = (unsigned short)data[i];
-//      }
-//      drawBoxes(data2, count);
+      // внутренние данные (для сверки)
+      Serial.println("------- draw_boxes_array -------");
+      int a_length = sizeof(draw_boxes_array) / sizeof(unsigned short);
+      for (int i=0; i<a_length; i++) {
+        Serial.print(draw_boxes_array[i]); Serial.print(",");
+      }
+      Serial.println("");
 
       drawBoxesArray();
 
-      Serial.println("--------------");
+
+      // ==== с внешними данными ====
+      
+      // получение (пока кривое)
+      String string_data = sListener.data();
+      int data_length = string_data.length();
+      char* char_data = new char[data_length+1];
+      string_data.toCharArray(char_data, data_length+1);
+      
+      cmdParser.parse(char_data);
+      int* data = cmdParser.data();
+      int data_count = cmdParser.length();
+
+      Serial.println("data:"); 
+      for (int i=0; i < data_count; i++) {
+        Serial.print(data[i]); Serial.print(",");
+      }
+      Serial.println(""); 
+      
+      // преобразование в unsigned short
+      unsigned short *usData = new unsigned short;
+      for (int i=0; i < data_count; i++) {
+        usData[i] = (unsigned short)data[i];
+      }
+
+      Serial.println("usData:"); 
+      for (int i=0; i < data_count; i++) {
+        Serial.print(usData[i]); Serial.print(",");
+      }
+      Serial.println(""); 
+      
+      //drawBoxes(usData, count);
     }
   }
 }
+
 
 

@@ -124,7 +124,7 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
 
 void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY)
 {
-  Serial.println("Drawing::drawObjectArray()");
+  Serial.println("--------- Drawing::drawObjectArray() ----------");
   
   unsigned short posX;
   unsigned short posY;
@@ -133,10 +133,8 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       posX = data[i];
       posY = data[i+1];
       
-        Serial.print(posX);
-        Serial.print(", ");
-        Serial.print(posY);
-        Serial.println("");
+        Serial.print(posX); Serial.print(",");
+        Serial.print(posY); Serial.print(",");
 
     if (posX & 0x8000) {
       laser.on();
@@ -147,6 +145,8 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       
       //Serial.println( String(posX & 0x7fff) + ", " + String(posY));
   }
+  Serial.println("");
+  
   laser.off();
 }
 

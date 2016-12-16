@@ -9,6 +9,7 @@ class CommandParser
     }
     
   void parse(char* inputData) {
+    delete this->the_data;
     this->the_data = new int;
     
     this->the_command = strtok(inputData, this->command_delimiter);
@@ -39,6 +40,6 @@ class CommandParser
 
     char* the_command;
     int the_counter = 0;
-    int* the_data = new int;
+    int* the_data;
 };
 
