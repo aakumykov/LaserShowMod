@@ -4,14 +4,16 @@
 #include "Objects.h"
 #include "Logo.h"
 
-#include "SerialListener.cpp"
-#include "Interval.cpp"
-#include "CommandParser.cpp"
+#include <SerialListener.h>
+#include <Interval.h>
+#include <CommandParser.h>
+
+// 1:0,0,0,1000,1000,1000,1000,0,0,0;
 
 Laser laser(5);
-SerialListener sListener;
-Interval interval(1000);
-CommandParser cmdParser;
+SerialListener sListener(256, ';');
+Interval interval(100);
+CommandParser cmdParser(128, ":", ",");
 
 const unsigned short draw_boxes[] PROGMEM = {
 0x0,0x0,
@@ -43,6 +45,8 @@ const unsigned short draw_boxes_array[] = {
 
 void drawBoxesArray()
 {
+  Serial.println(F("drawBoxesArray()"));
+  
   long centerX, centerY, w,h;
   Drawing::calcObjectBoxArray(draw_boxes_array, sizeof(draw_boxes_array)/4, centerX, centerY, w, h);
 
@@ -54,8 +58,10 @@ void drawBoxesArray()
   }
 }
 
-void drawBoxesExternal(unsigned short data, int data_length)
+void drawBoxesExternal(unsigned int* data, int data_length)
 {
+  Serial.println(F("drawBoxesExternal()"));
+  
   long centerX, centerY, w,h;
   Drawing::calcObjectBoxArray(draw_boxes, sizeof(draw_boxes)/4, centerX, centerY, w, h);
 
@@ -71,62 +77,35 @@ void drawBoxesExternal(unsigned short data, int data_length)
 void setup()
 {  
   laser.init();
-  Serial.begin(9600); while(!Serial);
-  Serial.println("= LaserShowMod2 =");
+  Serial.begin(9600);
+  Serial.println(F("= LaserShowMod ="));
 }
 
 void loop() {
   sListener.wait();
 
   if (interval.ready()) {
-    if (sListener.recieved()){
-//      Serial.print("data ("); Serial.print(count); Serial.print("): ");
-//      for (int i=0; i<count; i++) { 
-//        Serial.print(data[i]); Serial.print(",");
-//      } Serial.println("");
-
-      // внутренние данные (для сверки)
-      Serial.println("------- draw_boxes_array -------");
-      int a_length = sizeof(draw_boxes_array) / sizeof(unsigned short);
-      for (int i=0; i<a_length; i++) {
-        Serial.print(draw_boxes_array[i]); Serial.print(",");
-      }
-      Serial.println("");
-
+    
+    if (sListener.isRecieved()){
+      
+      // ====  c внутренними данными (для сверки) ====
+      Serial.println(F(""));
       drawBoxesArray();
-
 
       // ==== с внешними данными ====
       
-      // получение (пока кривое)
-      String string_data = sListener.data();
-      int data_length = string_data.length();
-      char* char_data = new char[data_length+1];
-      string_data.toCharArray(char_data, data_length+1);
-      
-      cmdParser.parse(char_data);
-      int* data = cmdParser.data();
-      int data_count = cmdParser.length();
+//1:0,0,0,1000,1000,1000,1000,0,0,0;
 
-      Serial.println("data:"); 
-      for (int i=0; i < data_count; i++) {
-        Serial.print(data[i]); Serial.print(",");
-      }
-      Serial.println(""); 
+//1:0,0,32768,1000,33768,1000,33768,0,32768,0;
       
-      // преобразование в unsigned short
-      unsigned short *usData = new unsigned short;
-      for (int i=0; i < data_count; i++) {
-        usData[i] = (unsigned short)data[i];
-      }
+      char* inputData = sListener.data();
 
-      Serial.println("usData:"); 
-      for (int i=0; i < data_count; i++) {
-        Serial.print(usData[i]); Serial.print(",");
-      }
-      Serial.println(""); 
-      
-      //drawBoxes(usData, count);
+      cmdParser.parse(inputData);
+      unsigned int* data = cmdParser.data();
+      int data_len = cmdParser.length();
+
+      Serial.println(F(""));
+      drawBoxesExternal(data, data_len);
     }
   }
 }
