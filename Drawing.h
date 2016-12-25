@@ -28,7 +28,7 @@ public:
   static void drawObject(const unsigned short* data, int size, long translateX = 0, long translateY = 0);
 
   // ! --**-- not from PROGMEM
-  static void drawObjectArray(const unsigned short* data, int size, long translateX = 0, long translateY = 0);
+  static void drawObjectArray(const unsigned short* data, int size, long translateX = 0, long translateY = 0, bool debug=false);
 
   //! Draws the given data (which needs to be in PROGMEM). Size indicates the number
   //! of draw commands (so it is sizeof(data)/4).

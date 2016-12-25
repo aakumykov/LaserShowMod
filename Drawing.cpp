@@ -122,12 +122,14 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
   laser.off();
 }
 
-void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY)
+void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY, bool debug=false)
 {
-  Serial.println(F("==> Drawing::drawObjectArray()"));
-  Serial.print(F("size: ")); Serial.println(size); 
-  Serial.print(F("translateX: ")); Serial.println(translateX); 
-  Serial.print(F("translateY: ")); Serial.println(translateY); 
+  if (debug) {
+    Serial.println(F("==> Drawing::drawObjectArray()"));
+    Serial.print(F("size: ")); Serial.println(size); 
+    Serial.print(F("translateX: ")); Serial.println(translateX); 
+    Serial.print(F("translateY: ")); Serial.println(translateY);
+  }
   
   unsigned short posX;
   unsigned short posY;
@@ -136,8 +138,10 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       posX = data[i];
       posY = data[i+1];
       
+      if (debug) {      
         Serial.print(posX); Serial.print(F(","));
         Serial.print(posY); Serial.print(F(","));
+      }
 
     if (posX & 0x8000) {
       laser.on();
@@ -148,7 +152,10 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       
       //Serial.println( String(posX & 0x7fff) + ", " + String(posY));
   }
-  Serial.println(F(""));
+
+  if (debug) {
+    Serial.println(F(""));
+  }
   
   laser.off();
 }
@@ -244,6 +251,7 @@ void Drawing::calcObjectBoxArray(const unsigned short* data, int size, long& cen
   unsigned short x1 = 0;
   unsigned short y1 = 0;
   for (int i=0; i<(size/2); i+=2){
+    Serial.print(F("i=")); Serial.println(i);
     posX = data[i] & 0x7fff;
     posY = data[i+1];
     if (posX < x0) x0 = posX;
