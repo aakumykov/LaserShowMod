@@ -63,13 +63,13 @@ void drawBoxesExternal(unsigned int* data, int data_length)
   Serial.println(F("drawBoxesExternal()"));
   
   long centerX, centerY, w,h;
-  Drawing::calcObjectBoxArray(draw_boxes, sizeof(draw_boxes)/4, centerX, centerY, w, h);
+  Drawing::calcObjectBoxArray(data, data_length/2, centerX, centerY, w, h);
 
   laser.setOffset(2048,2048);
   laser.setScale(4);
   
-  for (int i = 0;i<1;i++) {
-    Drawing::drawObjectArray(draw_boxes, sizeof(draw_boxes)/2, -centerX, -centerY);
+  for (int i=0; i<1; i++) {
+    Drawing::drawObjectArray(data, data_length, -centerX, -centerY);
   }
 }
 
@@ -93,10 +93,10 @@ void loop() {
       drawBoxesArray();
 
       // ==== с внешними данными ====
-      
-//1:0,0,0,1000,1000,1000,1000,0,0,0;
-
-//1:0,0,32768,1000,33768,1000,33768,0,32768,0;
+/*
+1:0,0,0,1000,1000,1000,1000,0,0,0;
+1:0,0,32768,1000,33768,1000,33768,0,32768,0;
+*/
       
       char* inputData = sListener.data();
 
@@ -105,7 +105,7 @@ void loop() {
       int data_len = cmdParser.length();
 
       Serial.println(F(""));
-      drawBoxesExternal(data, data_len);
+      //drawBoxesExternal(data, data_len);
     }
   }
 }

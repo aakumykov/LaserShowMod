@@ -124,7 +124,10 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
 
 void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY)
 {
-  Serial.println("--------- Drawing::drawObjectArray() ----------");
+  Serial.println(F("==> Drawing::drawObjectArray()"));
+  Serial.print(F("size: ")); Serial.println(size); 
+  Serial.print(F("translateX: ")); Serial.println(translateX); 
+  Serial.print(F("translateY: ")); Serial.println(translateY); 
   
   unsigned short posX;
   unsigned short posY;
@@ -133,8 +136,8 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       posX = data[i];
       posY = data[i+1];
       
-        Serial.print(posX); Serial.print(",");
-        Serial.print(posY); Serial.print(",");
+        Serial.print(posX); Serial.print(F(","));
+        Serial.print(posY); Serial.print(F(","));
 
     if (posX & 0x8000) {
       laser.on();
@@ -145,7 +148,7 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       
       //Serial.println( String(posX & 0x7fff) + ", " + String(posY));
   }
-  Serial.println("");
+  Serial.println(F(""));
   
   laser.off();
 }
@@ -194,6 +197,13 @@ void Drawing::drawObjectRotated3D(const unsigned short* data, int size, long cen
 
 void Drawing::calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height)
 {
+  Serial.println(F("==> Drawing::calcObjectBox()"));
+  Serial.print(F("size: ")); Serial.println(size);
+  Serial.print(F("centerX: ")); Serial.println(centerX);
+  Serial.print(F("centerY: ")); Serial.println(centerY);
+  Serial.print(F("width: ")); Serial.println(width);
+  Serial.print(F("height: ")); Serial.println(height);
+  
   const unsigned short* d = data;
   unsigned short posX;
   unsigned short posY;
@@ -220,7 +230,13 @@ void Drawing::calcObjectBox(const unsigned short* data, int size, long& centerX,
 
 void Drawing::calcObjectBoxArray(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height)
 {
-  //Serial.println("size: "+String(size));
+  Serial.println(F("==> Drawing::calcObjectBoxArray()"));
+  Serial.print(F("size: ")); Serial.println(size);
+  Serial.print(F("centerX: ")); Serial.println(centerX);
+  Serial.print(F("centerY: ")); Serial.println(centerY);
+  Serial.print(F("width: ")); Serial.println(width);
+  Serial.print(F("height: ")); Serial.println(height);
+  
   unsigned short posX;
   unsigned short posY;
   unsigned short x0 = 4096;
