@@ -25,7 +25,7 @@ public:
 
   //! Draws the given data (which needs to be in PROGMEM). Size indicates the number
   //! of draw commands (so it is sizeof(data)/4).
-  static void drawObject(const unsigned short* data, int size, long translateX = 0, long translateY = 0);
+  static void drawObject(const unsigned short* data, int size, long translateX = 0, long translateY = 0, bool debug=false);
 
   // ! --**-- not from PROGMEM
   static void drawObjectArray(const unsigned short* data, int size, long translateX = 0, long translateY = 0, bool debug=false);
@@ -38,9 +38,9 @@ public:
   static void drawObjectRotated3D(const unsigned short* data, int size, long centerX, long centerY, int angleX, int angleY, int fov);
 
   //! Returns the center of the object (center of bounding box)
-  static void calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height);
+  static void calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height, bool debug=false);
 
-  static void calcObjectBoxArray(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height);
+  static void calcObjectBoxArray(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height, bool debug=false);
 };
 
 #endif
