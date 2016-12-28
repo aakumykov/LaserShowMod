@@ -8,7 +8,7 @@
 #include <Interval.h>
 #include <CommandParser.h>
 
-// 1:0,0,0,1000,1000,1000,1000,0,0,0;
+// 1|N:0,N:0,Y:0,Y:1000,Y:1000,Y:1000,Y:1000,Y:0,Y:0,Y:0;
 
 Laser laser(5);
 SerialListener sListener(256, ';');
@@ -46,7 +46,7 @@ const unsigned short draw_boxes_array[] = {
 
 void drawBoxes()
 {
-  Serial.println(F("drawBoxesArray()"));
+  Serial.println(F("drawBoxes()"));
   
   long centerX, centerY, w,h;
   Drawing::calcObjectBox(draw_boxes, sizeof(draw_boxes)/4, centerX, centerY, w, h);
@@ -57,6 +57,8 @@ void drawBoxes()
   for (int i=0; i<1; i++) {
     Drawing::drawObject(draw_boxes, sizeof(draw_boxes)/4, -centerX, -centerY);
   }
+
+  Serial.println(F(""));
 }
 
 void drawBoxesArray()
@@ -105,7 +107,7 @@ void loop() {
     if (sListener.isRecieved()){
 
 //    Serial.println(F(""));
-//    drawBoxes();
+    drawBoxes();
 //    
 //    Serial.println(F(""));
 //    drawBoxesArray();
@@ -113,12 +115,12 @@ void loop() {
       // ==== с внешними данными ====
       char* inputData = sListener.data();
 
-      p.parse(inputData);
-      unsigned int* data = p.data();
-      int data_len = p.length();
-
-      Serial.println(F(""));
-      drawBoxesExternal(data, data_len);
+//      p.parse(inputData);
+//      unsigned int* data = p.data();
+//      int data_len = p.length();
+//
+//      Serial.println(F(""));
+//      drawBoxesExternal(data, data_len);
 
       delay(1);
     }

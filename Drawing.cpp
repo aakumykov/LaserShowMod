@@ -3,6 +3,158 @@
 #include "Drawing.h"
 #include "Font.h"
 
+void Drawing::drawObject(const unsigned short* data, int size, long translateX, long translateY, bool debug=false)
+{
+  Serial.print(F("==> Drawing::drawObject("));
+   Serial.print(F("data: ")); Serial.print(F(", "));
+   Serial.print(F("size: ")); Serial.print(size); Serial.print(F(", "));
+   Serial.print(F("translateX: ")); Serial.print(translateX); Serial.print(F(", "));
+   Serial.print(F("translateY: ")); Serial.print(translateY); //Serial.print(F(", "));
+  Serial.println(F(")"));
+
+  const unsigned short* d = data;
+  unsigned short posX;
+  unsigned short posY;
+
+  byte counter = 1;
+  
+  while (size>0) {
+    posX = pgm_read_word(d);
+    d++;
+    posY = pgm_read_word(d);
+    d++;
+    size--;
+
+    Serial.print(counter++); Serial.print(F(": "));
+    Serial.print(F("raw x,y: "));
+    Serial.print(posX);
+    Serial.print(F(", "));
+    Serial.print(posY);
+
+    if (posX & 0x8000) {
+      laser.on();
+    } else {
+      laser.off();
+    }
+    laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
+
+    Serial.print(F(" / "));
+    Serial.print(F("clear x,y: "));
+    Serial.print(posX & 0x7fff);
+    Serial.print(F(", "));
+    Serial.println(posY);
+  }
+  laser.off();
+}
+
+void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY, bool debug=false)
+{
+  Serial.print(F("==> Drawing::drawObjectArray("));
+   Serial.print(F("data: ")); Serial.print(F(", "));
+   Serial.print(F("size: ")); Serial.print(size); Serial.print(F(", "));
+   Serial.print(F("translateX: ")); Serial.print(translateX); Serial.print(F(", "));
+   Serial.print(F("translateY: ")); Serial.print(translateY); //Serial.print(F(", "));
+  Serial.println(F(")"));
+  
+  unsigned short posX;
+  unsigned short posY;
+
+  byte counter = 1;
+
+  for (byte i=0; i<(size); i+=2) {
+      posX = data[i];
+      posY = data[i+1];
+      
+    Serial.print(counter++); Serial.print(F(": "));
+    Serial.print(F("raw x,y: "));
+    Serial.print(posX);
+    Serial.print(F(", "));
+    Serial.print(posY);
+
+    if (posX & 0x8000) {
+      laser.on();
+    } else {
+      laser.off();
+    }
+    laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
+    
+    Serial.print(F(" / "));
+    Serial.print(F("clear x,y: "));
+    Serial.print(posX & 0x7fff);
+    Serial.print(F(", "));
+    Serial.println(posY);
+  }
+  
+  laser.off();
+}
+
+void Drawing::calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height, bool debug=false)
+{
+  if (debug) {
+    Serial.println(F("==> Drawing::calcObjectBox()"));
+    Serial.print(F("size: ")); Serial.println(size);
+    Serial.print(F("centerX: ")); Serial.println(centerX);
+    Serial.print(F("centerY: ")); Serial.println(centerY);
+    Serial.print(F("width: ")); Serial.println(width);
+    Serial.print(F("height: ")); Serial.println(height);
+  }
+  
+  const unsigned short* d = data;
+  unsigned short posX;
+  unsigned short posY;
+  unsigned short x0 = 4096;
+  unsigned short y0 = 4096;
+  unsigned short x1 = 0;
+  unsigned short y1 = 0;
+  while (size>0) {
+    posX = pgm_read_word(d) & 0x7fff;
+    d++;
+    posY = pgm_read_word(d);
+    d++;
+    size--;
+    if (posX < x0) x0 = posX;
+    if (posY < y0) y0 = posY;
+    if (posX > x1) x1 = posX;
+    if (posY > y1) y1 = posY;
+  }
+  centerX = (x0 + x1) / 2;
+  centerY = (y0 + y1) / 2;
+  width = x1 - x0;
+  height = y1 - y0;
+}
+
+void Drawing::calcObjectBoxArray(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height, bool debug=false)
+{
+  if (debug) {
+    Serial.println(F("==> Drawing::calcObjectBoxArray()"));
+    Serial.print(F("size: ")); Serial.println(size);
+    Serial.print(F("centerX: ")); Serial.println(centerX);
+    Serial.print(F("centerY: ")); Serial.println(centerY);
+    Serial.print(F("width: ")); Serial.println(width);
+    Serial.print(F("height: ")); Serial.println(height);
+  }
+  
+  unsigned short posX;
+  unsigned short posY;
+  unsigned short x0 = 4096;
+  unsigned short y0 = 4096;
+  unsigned short x1 = 0;
+  unsigned short y1 = 0;
+  for (int i=0; i<(size/2); i+=2){
+    //Serial.print(F("i=")); Serial.println(i);
+    posX = data[i] & 0x7fff;
+    posY = data[i+1];
+    if (posX < x0) x0 = posX;
+    if (posY < y0) y0 = posY;
+    if (posX > x1) x1 = posX;
+    if (posY > y1) y1 = posY;
+  }
+  centerX = (x0 + x1) / 2;
+  centerY = (y0 + y1) / 2;
+  width = x1 - x0;
+  height = y1 - y0;
+}
+
 
 void Drawing::drawString(String text, int x, int y, int count)
 {
@@ -95,70 +247,6 @@ long Drawing::drawLetter(byte letter, long translateX, long translateY)
   return adv;
 }
 
-void Drawing::drawObject(const unsigned short* data, int size, long translateX, long translateY, bool debug=false)
-{
-  //Serial.println("size: "+size);
-  const unsigned short* d = data;
-  unsigned short posX;
-  unsigned short posY;
-  while (size>0) {
-    posX = pgm_read_word(d);
-    d++;
-    posY = pgm_read_word(d);
-    d++;
-    size--;
-
-      //Serial.println(posX+", "+posY);
-
-    if (posX & 0x8000) {
-      laser.on();
-    } else {
-      laser.off();
-    }
-    laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
-
-    Serial.println( String(posX & 0x7fff)+", "+posY);
-  }
-  laser.off();
-}
-
-void Drawing::drawObjectArray(const unsigned short* data, int size, long translateX, long translateY, bool debug=false)
-{
-  if (debug) {
-    Serial.println(F("==> Drawing::drawObjectArray()"));
-    Serial.print(F("size: ")); Serial.println(size); 
-    Serial.print(F("translateX: ")); Serial.println(translateX); 
-    Serial.print(F("translateY: ")); Serial.println(translateY);
-  }
-  
-  unsigned short posX;
-  unsigned short posY;
-
-  for (byte i=0; i<(size); i+=2) {
-      posX = data[i];
-      posY = data[i+1];
-      
-      if (debug) {      
-        Serial.print(posX); Serial.print(F(","));
-        Serial.print(posY); Serial.print(F(","));
-      }
-
-    if (posX & 0x8000) {
-      laser.on();
-    } else {
-      laser.off();
-    }
-    laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
-    Serial.println( String(posX & 0x7fff) + ", " + String(posY));
-  }
-
-  if (debug) {
-    Serial.println(F(""));
-  }
-  
-  laser.off();
-}
-
 long SIN(unsigned int angle);
 long COS(unsigned int angle);
 
@@ -199,72 +287,5 @@ void Drawing::drawObjectRotated3D(const unsigned short* data, int size, long cen
   laser.setMatrix(world);
   drawObject(data,size, -centerX, -centerY);  
   laser.setEnable3D(false);
-}
-
-void Drawing::calcObjectBox(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height, bool debug=false)
-{
-  if (debug) {
-    Serial.println(F("==> Drawing::calcObjectBox()"));
-    Serial.print(F("size: ")); Serial.println(size);
-    Serial.print(F("centerX: ")); Serial.println(centerX);
-    Serial.print(F("centerY: ")); Serial.println(centerY);
-    Serial.print(F("width: ")); Serial.println(width);
-    Serial.print(F("height: ")); Serial.println(height);
-  }
-  
-  const unsigned short* d = data;
-  unsigned short posX;
-  unsigned short posY;
-  unsigned short x0 = 4096;
-  unsigned short y0 = 4096;
-  unsigned short x1 = 0;
-  unsigned short y1 = 0;
-  while (size>0) {
-    posX = pgm_read_word(d) & 0x7fff;
-    d++;
-    posY = pgm_read_word(d);
-    d++;
-    size--;
-    if (posX < x0) x0 = posX;
-    if (posY < y0) y0 = posY;
-    if (posX > x1) x1 = posX;
-    if (posY > y1) y1 = posY;
-  }
-  centerX = (x0 + x1) / 2;
-  centerY = (y0 + y1) / 2;
-  width = x1 - x0;
-  height = y1 - y0;
-}
-
-void Drawing::calcObjectBoxArray(const unsigned short* data, int size, long& centerX, long& centerY, long& width, long& height, bool debug=false)
-{
-  if (debug) {
-    Serial.println(F("==> Drawing::calcObjectBoxArray()"));
-    Serial.print(F("size: ")); Serial.println(size);
-    Serial.print(F("centerX: ")); Serial.println(centerX);
-    Serial.print(F("centerY: ")); Serial.println(centerY);
-    Serial.print(F("width: ")); Serial.println(width);
-    Serial.print(F("height: ")); Serial.println(height);
-  }
-  
-  unsigned short posX;
-  unsigned short posY;
-  unsigned short x0 = 4096;
-  unsigned short y0 = 4096;
-  unsigned short x1 = 0;
-  unsigned short y1 = 0;
-  for (int i=0; i<(size/2); i+=2){
-    //Serial.print(F("i=")); Serial.println(i);
-    posX = data[i] & 0x7fff;
-    posY = data[i+1];
-    if (posX < x0) x0 = posX;
-    if (posY < y0) y0 = posY;
-    if (posX > x1) x1 = posX;
-    if (posY > y1) y1 = posY;
-  }
-  centerX = (x0 + x1) / 2;
-  centerY = (y0 + y1) / 2;
-  width = x1 - x0;
-  height = y1 - y0;
 }
 
