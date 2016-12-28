@@ -20,11 +20,11 @@ const unsigned short draw_boxes[] PROGMEM = {
 0x83e8,0x0,
 0x8000,0x0,
 
-0xfa,0xfa,
-0x80fa,0x2ee,
-0x82ee,0x2ee,
-0x82ee,0xfa,
-0x80fa,0xfa,
+//0xfa,0xfa,
+//0x80fa,0x2ee,
+//0x82ee,0x2ee,
+//0x82ee,0xfa,
+//0x80fa,0xfa,
 };
 
 const unsigned short draw_boxes_array[] = {
@@ -34,11 +34,11 @@ const unsigned short draw_boxes_array[] = {
 0x83e8,0x0,
 0x8000,0x0,
 
-0xfa,0xfa,
-0x80fa,0x2ee,
-0x82ee,0x2ee,
-0x82ee,0xfa,
-0x80fa,0xfa,
+//0xfa,0xfa,
+//0x80fa,0x2ee,
+//0x82ee,0x2ee,
+//0x82ee,0xfa,
+//0x80fa,0xfa,
 };
 
 
@@ -108,26 +108,32 @@ void loop() {
     
     if (sListener.isRecieved()){
 
-//    Serial.println(F(""));
+    Serial.println(F(""));
+    
     drawBoxes();
-//    
-//    Serial.println(F(""));
-//    drawBoxesArray();
+    
+    drawBoxesArray();
 
       // ==== с внешними данными ====
-      char* inputData = sListener.data();
-
-//      Serial.println(sListener.length());
-      
-//      Serial.println(F("inputData: "));
-//      for (int i=0; i<sListener.length(); i++) {
-//        Serial.println(inputData[i]);
-//      }
-
-//      p.parse(inputData);
-//      unsigned int* data = p.data();
-//      int data_len = p.length();
+      int len = sListener.length();
+      char* externalData = sListener.data();
 //
+//      Serial.print(F("externalData length: "));
+//      Serial.println(len);
+//      
+//      Serial.print(F("externalData: -->@"));
+//      for (int i=0; i<len; i++) { Serial.print(externalData[i]); }
+//      Serial.println(F("@<--"));
+
+      p.parse(externalData);
+      unsigned int* data = p.data();
+      int data_len = p.length();
+
+//      for (int i=0; i<data_len; i++) { Serial.println(externalData[i]); }
+
+      Serial.print(F("parsed data length: "));
+      Serial.println(data_len);
+
 //      drawBoxesExternal(data, data_len);
 
       delay(1);

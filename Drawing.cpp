@@ -66,7 +66,8 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
       posX = data[i];
       posY = data[i+1];
       
-    Serial.print(counter++);// Serial.print(F(": "));
+    Serial.print(counter++);
+    Serial.print(F(": "));
     //Serial.print(F("raw x,y: "));
     Serial.print(posX);
     Serial.print(F(","));
