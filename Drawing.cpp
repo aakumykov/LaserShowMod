@@ -16,7 +16,7 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
   unsigned short posX;
   unsigned short posY;
 
-  byte counter = 1;
+  byte counter = 0;
   
   while (size>0) {
     posX = pgm_read_word(d);
@@ -25,10 +25,11 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
     d++;
     size--;
 
-    Serial.print(counter++); Serial.print(F(": "));
-    Serial.print(F("raw x,y: "));
+    Serial.print(counter++);
+    Serial.print(F(": "));
+    //Serial.print(F("raw x,y: "));
     Serial.print(posX);
-    Serial.print(F(", "));
+    Serial.print(F(","));
     Serial.print(posY);
 
     if (posX & 0x8000) {
@@ -38,10 +39,10 @@ void Drawing::drawObject(const unsigned short* data, int size, long translateX, 
     }
     laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
 
-    Serial.print(F(" / "));
-    Serial.print(F("clear x,y: "));
+    Serial.print(F(" --> "));
+    //Serial.print(F("clear x,y: "));
     Serial.print(posX & 0x7fff);
-    Serial.print(F(", "));
+    Serial.print(F(","));
     Serial.println(posY);
   }
   laser.off();
@@ -59,16 +60,16 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
   unsigned short posX;
   unsigned short posY;
 
-  byte counter = 1;
+  byte counter = 0;
 
   for (byte i=0; i<(size); i+=2) {
       posX = data[i];
       posY = data[i+1];
       
-    Serial.print(counter++); Serial.print(F(": "));
-    Serial.print(F("raw x,y: "));
+    Serial.print(counter++);// Serial.print(F(": "));
+    //Serial.print(F("raw x,y: "));
     Serial.print(posX);
-    Serial.print(F(", "));
+    Serial.print(F(","));
     Serial.print(posY);
 
     if (posX & 0x8000) {
@@ -78,10 +79,10 @@ void Drawing::drawObjectArray(const unsigned short* data, int size, long transla
     }
     laser.sendto((posX & 0x7fff) + translateX, posY + translateY);
     
-    Serial.print(F(" / "));
-    Serial.print(F("clear x,y: "));
+    Serial.print(F(" --> "));
+    //Serial.print(F("clear x,y: "));
     Serial.print(posX & 0x7fff);
-    Serial.print(F(", "));
+    Serial.print(F(","));
     Serial.println(posY);
   }
   

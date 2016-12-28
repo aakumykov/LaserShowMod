@@ -104,8 +104,6 @@ void setup()
 void loop() {
   sListener.wait();
 
-//1|N:0,0_Y:0,1000_Y:1000,1000_Y:1000,0_Y:0,0;
-
   if (interval.ready()) {
     
     if (sListener.isRecieved()){
@@ -119,16 +117,23 @@ void loop() {
       // ==== с внешними данными ====
       char* inputData = sListener.data();
 
-      p.parse(inputData);
-      unsigned int* data = p.data();
-      int data_len = p.length();
+//      Serial.println(sListener.length());
+      
+//      Serial.println(F("inputData: "));
+//      for (int i=0; i<sListener.length(); i++) {
+//        Serial.println(inputData[i]);
+//      }
 
-      drawBoxesExternal(data, data_len);
+//      p.parse(inputData);
+//      unsigned int* data = p.data();
+//      int data_len = p.length();
+//
+//      drawBoxesExternal(data, data_len);
 
       delay(1);
     }
   }
 }
 
-
+//1|N:0,0_Y:0,1000_Y:1000,1000_Y:1000,0_Y:0,0;
 
